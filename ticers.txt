@@ -1,0 +1,20 @@
+regions:
+
+
+USA - Verizonl, AT&Tl, T-Mobilel
+China - China Mobile, China Telecom - x
+Germany - Deutsche Telecoml, Telefonical
+Japan - Softbankl, (Ymobile, NTT, au)
+UK - BTl, Vodafonel
+France - Organe, Bouygues
+Spain - Movistar, Orange
+UAE - Duy, Etisalaty
+India - Airtel, Jio x
+South Korea - KT, SK y
+
+USA - 
+3
+
+
+
+ickers = ['VZ', 'T', 'DTE.DE', 'O2D.DE', 'TMUS', 'SKM', 'KT', '7020.SR', 'DU.AE', 'BT-A.L', 'VOD.L', ''
