@@ -12,9 +12,27 @@ UAE - Duy, Etisalaty
 India - Airtel, Jio x
 South Korea - KT, SK y
 
+
+
+
 USA - 
 3
 
 
 
 ickers = ['VZ', 'T', 'DTE.DE', 'O2D.DE', 'TMUS', 'SKM', 'KT', '7020.SR', 'DU.AE', 'BT-A.L', 'VOD.L', ''
+
+
+tickers = {
+    'Verizon': ['USA', 'VZ'],
+    'AT&T':['USA','T'], 
+    'Deutche Telecom':['Germany','DTE.DE'], 
+    'O2 Holdings': ['Germany','O2D.DE'], 
+    'SK Telecom': ['South Korea','SKM'], 
+    'KT Telecom': ['South Korea','KT'], 
+    'Etisalat':['UAE','7020.SR'], 
+    'Du Telecom':['UAE','DU.AE'], 
+    'British Telecom': ['UK','BT-A.L'], 
+    'Vodafone': ['UK','VOD.L']
+}
+
