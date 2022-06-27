@@ -1,3 +1,4 @@
+from array import array
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -5,6 +6,7 @@ import numpy as np
 from wordcloud import WordCloud
 from google.cloud import bigquery
 import yfinance
+import copy
 
 bqclient = bigquery.Client()
 
@@ -71,7 +73,9 @@ st.plotly_chart(fig)
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-tickers = {
+@st.cache()
+def getd():
+    tickers = {
     'Verizon': ['USA', 'VZ'],
     'AT&T':['USA','T'], 
     'SoftBank': ['Japan', '9984.T'],
@@ -102,29 +106,31 @@ tickers = {
     'DTAC': ['Thailand', 'DTAC.BK'],
     # 'Tele2': ['Sweden', 'TEL2-A.ST'],
     # 'Telenor': ['Sweden', 'TEL.OL']
-}
+    }
+    placeholder = st.empty()
+    for i in tickers:
+        placeholder.markdown('### **Processing**: Getting data for '+i)
+        tickers[i].append(yfinance.Ticker(tickers[i][1]))
+        tickers[i].append(tickers[i][2].info)  
+        tickers[i].append(tickers[i][2].earnings)
+    placeholder.empty()
 
-f=0
-placeholder = st.empty()
-for i in tickers:
-    placeholder.markdown('### **Processing**: Getting data for '+i)
-    tickers[i].append(yfinance.Ticker(tickers[i][1]))
-    tickers[i].append(tickers[i][2].info)  
-    tickers[i].append(tickers[i][2].earnings)
-placeholder.empty()
+    from functools import reduce # import needed for python3; builtin in python2
+    from collections import defaultdict
 
-st.markdown("# Country Wise Competitor Analysis")
+    def groupBy(key, seq):
+        return reduce(lambda grp, val: grp[key(val)].append(val) or grp, seq, defaultdict(list))
+
+    arranged = groupBy(lambda x: tickers[x][0], tickers)
+    return (tickers, arranged)
+
 
 earnings_df = pd.DataFrame()
-
-from functools import reduce # import needed for python3; builtin in python2
-from collections import defaultdict
-
-def groupBy(key, seq):
- return reduce(lambda grp, val: grp[key(val)].append(val) or grp, seq, defaultdict(list))
-
-arranged = groupBy(lambda x: tickers[x][0], tickers)
-
+data = getd()
+tickers = data[0]
+arranged = data[1]
+f=0
+st.markdown("# Country Wise Competitor Analysis")
 
 layout = dict(plot_bgcolor='white',
               margin=dict(t=20, l=20, r=20, b=20),
@@ -140,6 +146,9 @@ layout = dict(plot_bgcolor='white',
 
 data_element = st.radio("Select Data: ", ['Revenue', 'Earnings'])
 l=[]
+
+placeholder2 = st.empty()
+
 for i in arranged:
     st.markdown(f"## *{i}*")
 
@@ -164,7 +173,7 @@ for i in arranged:
             x=[2018,2019,2020,2021],
             y=earnings_df.iloc[:,i],
             mode="lines",
-            name=earnings_df.columns[i] + " YoY Growth"
+            name=earnings_df.columns[i] + f" {data_element} YoY Growth"
         ),
         row=i+1, col=1
         )
