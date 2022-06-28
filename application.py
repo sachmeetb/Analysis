@@ -73,7 +73,7 @@ st.plotly_chart(fig)
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-@st.cache(allow_output_mutation=True)
+@st.cache(allow_output_mutation=True, suppress_st_warning=True)
 def getd():
     tickers = {
     'Verizon': ['USA', 'VZ'],
@@ -145,22 +145,36 @@ layout = dict(plot_bgcolor='white',
                          mirror=True))
 
 
-data_element = st.radio("Select Data: ", ['Revenue', 'Earnings'])
+# data_element = st.radio("Select Data: ", ['Revenue', 'Earnings'])
 l=[]
+
+import math
+
+millnames = ['',' Thousand',' Million',' Billion',' Trillion']
+
+def millify(n):
+    # n = float(n)
+    millidx = max(0,min(len(millnames)-1,
+                        int(math.floor(0 if n == 0 else np.log10(abs(n))/3))))
+
+    return '{:.0f}{}'.format(n / 10**(3 * millidx), millnames[millidx])
 
 placeholder2 = st.empty()
 
 for i in arranged:
-    st.markdown(f"<h5 style='text-align: center'>{i}</h5>", unsafe_allow_html=True)
+    st.markdown(f"<h4 style='text-align: center'>{i}</h5>", unsafe_allow_html=True)
 
 
     for j in arranged[i]:
-        earnings_df[j +" Percentage Growth"] = tickers[j][4][data_element].pct_change()
+        earnings_df[j+' Revenue'] = tickers[j][4]['Revenue'].apply(millify)
+        earnings_df[j+' Earnings'] = (tickers[j][4]['Earnings']).apply(millify)
+        earnings_df[j +" Revenue Percentage Growth"] = tickers[j][4]['Revenue'].pct_change()
+        earnings_df[j +" Earnings Percentage Growth"] = tickers[j][4]['Earnings'].pct_change()
+        earnings_df[j +" Revenue Percentage Growth"].fillna('NA',inplace=True)
+        earnings_df[j +" Earnings Percentage Growth"].fillna('NA',inplace=True)
         # st.image(tickers[j][3]['logo_url'], width = 200)
         l.append(tickers[j][3]['logo_url'])
         l.append("https://www.macmillandictionary.com/external/slideshow/full/White_full.png")
-    for j in arranged[i]:
-        earnings_df[j] = tickers[j][4][data_element]
     col1, col2, col3 = st.columns([4,3,3])
 
     if len(l)==4:
@@ -184,12 +198,12 @@ for i in arranged:
             st.write("")
 
     specs = [[{"type": "table"}]]
-    for i in range(int(len(earnings_df.columns)*0.5)):
+    for i in range(2):
         specs.append([{"type": "scatter"}])
     fig = make_subplots(
-        rows=int(len(earnings_df.columns)*0.5+1), cols=1,
+        rows=int(3), cols=1,
         shared_xaxes=True,
-        vertical_spacing=0.03,
+        vertical_spacing=.05,
         specs=specs,
     )
     fig.add_trace(
@@ -205,24 +219,50 @@ for i in arranged:
         row=1,col=1
     )
     rowv = 1
-    for i in range(int(len(earnings_df.columns)*0.5)):
-        rowv+=1
-        fig.add_trace(
-        go.Scatter(
-            x=[2018,2019,2020,2021],
-            y=earnings_df.iloc[:,i],
-            mode="lines",
-            name=earnings_df.columns[i] + f" {data_element} YoY"
-        ),
-        row=rowv, col=1
-        )
+    color1='red'
+    color2='red'
+    for i in earnings_df.columns:
+        if "Earnings Percentage Growth" in i:
+            fig.add_trace(
+            go.Scatter(
+                x=[2018,2019,2020,2021],
+                y=earnings_df.loc[:,i],
+                mode="lines",
+                name=i.split()[0],
+                line_color=color1
+            )
+        ,row=2,col=1
+            )
+            color1='blue'
+        elif "Revenue Percentage Growth" in i:
+            fig.add_trace(
+            go.Scatter(
+                x=[2018,2019,2020,2021],
+                y=earnings_df.loc[:,i],
+                name=' ',
+                mode="lines",
+                line_color=color2
+            )
+        ,row=3,col=1)
+            color2 = 'blue'
     try:
-        fig.update_layout(width=800, height=200*len(earnings_df.columns))
+        fig.update_layout(width=800, height=900)
     except:
         fig.update_layout(width=1000, height=200)
     fig.update_layout(showlegend=True)
-    fig.update_yaxes(title_text="Percentage Growth")
+    fig.update_yaxes(title_text="Revenue Percentage Growth",row=2, col=1)
+    fig.update_yaxes(title_text="Earnings Percentage Growth",row=3, col=1)
     fig.update_xaxes(title_text="Years",row=len(earnings_df.columns))
+    fig.update_layout(
+    xaxis2=dict(
+        autorange=True,
+        rangeslider=dict(
+            autorange=True,
+            thickness=0.001,
+            bgcolor="blue"
+        ),
+        title_text="Years"
+    ))
     # fig.update_yaxes(title_text="Percentage Growth", row=1, col=1)
     # fig.update_xaxes(title_text="Years", row=1, col=1)
     st.plotly_chart(fig)

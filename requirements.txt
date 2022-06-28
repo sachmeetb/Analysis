@@ -1,6 +1,14 @@
 beautifulsoup4
+gensim
 matplotlib
 numpy
 pandas
+plotly
+protobuf
 requests
+streamlit
 wordcloud
+yfinance
+google-cloud-bigquery==2.34.1
+db-dtypes
+pandas-gbq
