@@ -79,24 +79,24 @@ def getd():
     'Verizon': ['USA', 'VZ'],
     'AT&T':['USA','T'], 
     'SoftBank': ['Japan', '9984.T'],
-    'Deutche Telecom':['Germany','DTE.DE'], 
+    'Deutsche Telekom':['Germany','DTE.DE'], 
     'O2 Holdings': ['Germany','O2D.DE'], 
-    'SK Telecom': ['South Korea','SKM'], 
-    'KT Telecom': ['South Korea','KT'], 
+    'Vodafone': ['UK','VOD.L'],
+    'British Telecom': ['UK','BT-A.L'], 
+    'Telestre': ['Australia', 'TLS.AX'],
     'Etisalat':['Middle East','7020.SR'], 
     # 'Du Telecom':['Middle East','DU.AE'], 
     'Saudi Telecom': ['Middle East', '7010.SR'],
+    'SK Telecom': ['South Korea','SKM'], 
+    'KT Telecom': ['South Korea','KT'], 
     'TeleNet':['Belgium', 'TNET.BR'],
     'Orange Belgium':['Belgium', 'OBEL.BR'],
-    'British Telecom': ['UK','BT-A.L'], 
-    'Vodafone': ['UK','VOD.L'],
     'Orange France': ['France', 'ORA.PA'],
     'Buoygues' : ['France', 'EN.PA'],
     'Bell Canada': ['Canada', 'BCE.TO'],
     'Freedom Mobile': ['Canada', 'SJR-B.TO'],
     'Claro (America Movil)': ['Brazil', 'AMX'],
     'Oi Mobile': ['Brazil', 'OIBR4.SA'],
-    'Telestre': ['Australia', 'TLS.AX'],
     'Indosat Ooredoo': ['Indonesia','ISAT.JK'],
     'KPN': ['Netherlands', 'KPN.AS'],
     'Swisscomm': ['Switzerland', 'SCMN.SW'],
@@ -181,8 +181,8 @@ for i in arranged:
     for j in arranged[i]:
         earnings_df[j+' Revenue'] = tickers[j][4]['Revenue'].apply(millify)
         earnings_df[j+' Earnings'] = (tickers[j][4]['Earnings']).apply(millify)
-        earnings_df[j +" Revenue Percentage Growth"] = tickers[j][4]['Revenue'].pct_change()
-        earnings_df[j +" Earnings Percentage Growth"] = tickers[j][4]['Earnings'].pct_change()
+        earnings_df[j +" Revenue Percentage Growth"] = tickers[j][4]['Revenue'].diff() / tickers[j][4]['Revenue'].abs().shift()
+        earnings_df[j +" Earnings Percentage Growth"] = tickers[j][4]['Earnings'].diff() / tickers[j][4]['Earnings'].abs().shift()
         earnings_df[j +" Revenue Percentage Growth"].fillna('NA',inplace=True)
         earnings_df[j +" Earnings Percentage Growth"].fillna('NA',inplace=True)
         # st.image(tickers[j][3]['logo_url'], width = 200)
