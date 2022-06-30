@@ -84,8 +84,8 @@ def getd():
     'SK Telecom': ['South Korea','SKM'], 
     'KT Telecom': ['South Korea','KT'], 
     'Etisalat':['Middle East','7020.SR'], 
-    'Du Telecom':['Middle East','DU.AE'], 
-    # 'Saudi Telecom': ['Middle East', '7010.SR'],
+    # 'Du Telecom':['Middle East','DU.AE'], 
+    'Saudi Telecom': ['Middle East', '7010.SR'],
     'TeleNet':['Belgium', 'TNET.BR'],
     'Orange Belgium':['Belgium', 'OBEL.BR'],
     'British Telecom': ['UK','BT-A.L'], 
@@ -150,6 +150,19 @@ l=[]
 
 import math
 
+def float_formatter(k):
+    l=[]
+    if "Percentage Growth" in k:
+        for i in earnings_df[k]:
+            if i != "NA":
+                l.append("{:.2f}%".format(i))
+            else:
+                l.append(i)
+    else:
+        for i in earnings_df[k]:
+            l.append(i)
+    return l
+
 millnames = ['',' Thousand',' Million',' Billion',' Trillion']
 
 def millify(n):
@@ -213,7 +226,7 @@ for i in arranged:
             align="left"
         ),
         cells=dict(
-            values=[earnings_df[k].tolist() for k in earnings_df.columns],
+            values=[float_formatter(k) for k in earnings_df.columns],
             align = "left")
         ),
         row=1,col=1
@@ -228,7 +241,7 @@ for i in arranged:
                 x=[2018,2019,2020,2021],
                 y=earnings_df.loc[:,i],
                 mode="lines",
-                name=i.split()[0],
+                name=i.replace(" Earnings Percentage Growth",""),
                 line_color=color1
             )
         ,row=2,col=1
@@ -250,16 +263,23 @@ for i in arranged:
     except:
         fig.update_layout(width=1000, height=200)
     fig.update_layout(showlegend=True)
-    fig.update_yaxes(title_text="Revenue Percentage Growth",row=2, col=1)
-    fig.update_yaxes(title_text="Earnings Percentage Growth",row=3, col=1)
+    fig.update_yaxes(title_text="% Growth Earnings",row=2, col=1)
+    fig.update_yaxes(title_font=dict(size=15, family='Courier'))
+    fig.update_yaxes(title_text="% Growth Revenue",row=3, col=1)
     fig.update_xaxes(title_text="Years",row=len(earnings_df.columns))
+    fig.update_layout(legend=dict(
+        y=0.254,
+        yanchor="bottom",
+        xanchor="right",
+        x=1.2
+    ))
     fig.update_layout(
     xaxis2=dict(
         autorange=True,
         rangeslider=dict(
             autorange=True,
-            thickness=0.001,
-            bgcolor="blue"
+            thickness=0.007,
+            bgcolor="green"
         ),
         title_text="Years"
     ))
